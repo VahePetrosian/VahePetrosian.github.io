@@ -1,1 +1,27 @@
-Hello World
+<html>
+<head>
+<script>
+  var newsApiKey = '46b315bb0b114a1499c1386739ae8d64';
+  var newsApiUrl = 'https://newsapi.org/v1/'
+  var requestHeaders = new Headers();
+  requestHeaders.append("X-Api-Key", newsApiKey);
+
+  var requestParametrs = {
+    method: 'GET',
+    headers: requestHeaders
+  }
+
+  var getArticleRequest = new Request(newsApiUrl+'articles?source=bbc-news',requestParametrs);
+
+  fetch(getArticleRequest).then(function(response) {
+    return response.json();
+  }).then(function(data) {
+    let mainDiv = document.getElementById("mainDiv");
+    mainDiv.innerHTML += JSON.stringify(data, null, "  ");
+  });
+</script>
+</head>
+<body>
+<pre id='mainDiv'></pre>
+</body>
+</html>
