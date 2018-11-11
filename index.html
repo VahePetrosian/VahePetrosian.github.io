@@ -1,34 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
   <script>
     "use strict";
 
     const newsApiKey = '46b315bb0b114a1499c1386739ae8d64';
-    const newsApiUrl = 'https://newsapi.org/v1/'
-    let requestHeaders = new Headers();
-    requestHeaders.append("X-Api-Key", newsApiKey);
+    const newsApiUrl = 'https://newsapi.org/v2/';
 
-    let requestParametrs = {
-      method: 'GET',
-      headers: requestHeaders
-    }
-
-    let getArticleRequest = new Request(newsApiUrl + 'articles?source=bbc-news', requestParametrs);
-
-    fetch(getArticleRequest).then(function (response) {
-      return response.json();
-    }).then(function (data) {
-      let contentDiv = document.getElementById("contentDiv");
-      let articles = data.articles.entries();
-      console.log(articles);
-      for (let article of articles) {
-        contentDiv.innerHTML += GetNewsCart(article[0], article[1]);
-      }
-    });
-
-    function GetNewsCart(index, article) {
+    function GetNewsHtmlCart(index, article) {
       let val = `<div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
                   <div class="card mb-4">
                     <div class="card-header">Author: ${article.author}</div>
@@ -44,12 +27,113 @@
                 </div>`
       return val;
     }
+    function FormHtmlResult(jsonResponse) {
+      let htmlResult = '';
+      let articles = jsonResponse.articles.entries();
+      for (let article of articles) {
+        htmlResult += GetNewsHtmlCart(article[0], article[1]);
+      }
+      return htmlResult;
+    }
+    function ClearMainDiv() {
+      let contentDiv = document.getElementById("contentDiv");
+      contentDiv.innerHTML = '';
+    }
+    function FillMainDiv(htmlMarkup) {
+      let contentDiv = document.getElementById("contentDiv");
+      contentDiv.innerHTML = htmlMarkup;
+    }
+    function RefreshContent(urlParam) {
+      let requestHeaders = new Headers();
+      requestHeaders.append("X-Api-Key", newsApiKey);
+      requestHeaders.append("Authorization", newsApiKey);
+
+      let requestParametrs = {
+        method: 'GET',
+        headers: requestHeaders
+      }
+
+      let getArticleRequest = new Request(newsApiUrl + urlParam, requestParametrs);
+
+      fetch(getArticleRequest).then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        let htmlMarkup = FormHtmlResult(data);
+        ClearMainDiv();
+        FillMainDiv(htmlMarkup);
+      });
+
+    }
+
+    function GetNewsByCountry(country) {
+      RefreshContent(`top-headlines?country=${country}`);
+    }
+    function GetNewsByCategory(category) {
+      RefreshContent(`top-headlines?country=us&category=${category}`);
+    }
+    function GetNewsByKeyword() {
+      let searchInput = document.getElementById("keywordSearchInput");
+      RefreshContent(`everything?q=${searchInput.value}`);
+    }
+    function GetNewsHeadline() {
+      GetNewsByCountry('gb');
+    }
+    GetNewsHeadline();
   </script>
 </head>
+
 <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">NewsApiImpl</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#" onclick="GetNewsHeadline();">Top headlines</a>
+        </li>
+        <li class="nav-item dropdown active">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">
+            Country
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="#" onclick="GetNewsByCountry('de');">Germany</a>
+            <a class="dropdown-item" href="#" onclick="GetNewsByCountry('fr');">France</a>
+            <a class="dropdown-item" href="#" onclick="GetNewsByCountry('gb');">Great Britain</a>
+            <a class="dropdown-item" href="#" onclick="GetNewsByCountry('ru');">Russia</a>
+            <a class="dropdown-item" href="#" onclick="GetNewsByCountry('ua');">Ukraine</a>
+            <a class="dropdown-item" href="#" onclick="GetNewsByCountry('us');">USA</a>
+        </li>
+        <li class="nav-item dropdown active">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">
+            Category
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('business');">Business</a>
+            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('entertainment');">Entertainment</a>
+            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('general');">General</a>
+            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('health');">Health</a>
+            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('science');">Science</a>
+            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('sports');">Sports</a>
+            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('technology');">Technology</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" id="keywordSearchInput" aria-label="Search">
+        <button class="btn  my-2 my-sm-0" type="submit" onclick="GetNewsByKeyword();">Search</button>
+      </form>
+      </div>
+  </nav>
+
   <div class="container">
     <div class="card-deck" id='contentDiv'>
     </div>
   </div>
 </body>
+
 </html>
