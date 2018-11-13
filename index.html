@@ -9,7 +9,8 @@
   <script>
     "use strict";
 
-    const newsApiKey = 'cf4cb85ba9f447f6aa4c35febe6d5837';//'46b315bb0b114a1499c1386739ae8d64';
+    /*-- Authorization --*/
+    const newsApiKey = 'cf4cb85ba9f447f6aa4c35febe6d5837';
     const newsApiUrl = 'https://newsapi.org/v2/';
 
     function GetRequestHeaders() {
@@ -24,6 +25,7 @@
       return requestParametrs;
     }
 
+    /*-- Source picker --*/
     let sourcesClass;
     let languages = new Map([['en', 'English'], ['ar', 'Sami '], ['de', 'Deutsch'], ['es', 'Spanish'], ['fr', 'French'], ['no', 'Norwegian'], ['ru', 'Russian']]);
     let countrys = new Map([['au', 'Australia'], ['gb', 'United Kingdom'], ['in', 'India'], ['it', 'Italy'], ['za', 'South Africa'], ['se', 'Sweden'], ['no', 'Norway']]);
@@ -48,6 +50,16 @@
       get sourcesByCategory() {
         return new Set([...this.sourcesSet].filter(x => x.category === this.filterValue));
       }
+    }
+
+    function LoadAllNewsSources() {
+      let getSourcesRequest = new Request(newsApiUrl + 'sources', GetRequestHeaders());
+      fetch(getSourcesRequest).then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        sourcesClass = new NewsSources(data.sources);
+        RefreshSourcesDiv();
+      });
     }
 
     function RefreshSourcesDiv(filterType, filterValue) {
@@ -112,24 +124,15 @@
       sourcesStartupDiv.appendChild(CreateSourceOptionsRow('category', categorys));
     }
 
-    function LoadAllNewsSources() {
-      let getSourcesRequest = new Request(newsApiUrl + 'sources', GetRequestHeaders());
-      fetch(getSourcesRequest).then(function (response) {
-        return response.json();
-      }).then(function (data) {
-        sourcesClass = new NewsSources(data.sources);
-        RefreshSourcesDiv();
-      });
-    }
-
+    /*-- News grid --*/
     function GetFormattedNewsCard(index, article) {
       let val = `<div class="card">
-                    <div class="card-header">Author: ${article.author?article.author:'Unknown'}</div>
-                    <img class="card-img-top" style="height: 100%; object-fit: cover;" src="${article.urlToImage?article.urlToImage:''}" onerror="this.style.display='none'">
+                    <div class="card-header">Author: ${article.author ? article.author : 'Unknown'}</div>
+                    <img class="card-img-top" style="height: 100%; object-fit: cover;" src="${article.urlToImage ? article.urlToImage : ''}" onerror="this.style.display='none'">
                     <div class="card-body">
-                      <h5 class="card-title">${article.title?article.title:'No title'}</h5>
+                      <h5 class="card-title">${article.title ? article.title : 'No title'}</h5>
                       <hr>
-                      <p class="card-text">${article.description?article.description:'No description'}</p>
+                      <p class="card-text">${article.description ? article.description : 'No description'}</p>
                       <a href="${article.url}" target="blank" class="justify-content-end">More details</a>         
                     </div>
                     <p class="card-text"><small class="text-muted">${article.publishedAt}</small></p>
@@ -176,6 +179,7 @@
       RefreshNewsPageContent(`everything?sources=${source}`);
     }
 
+    /*-- Init --*/
     function ShowStartupNews() {
       ShowHeadlineNewsForCountry('gb');
     }
@@ -189,6 +193,7 @@
 </head>
 
 <body onload="SetupPage();">
+
   <div class="modal" id="sourceDialog">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -198,10 +203,7 @@
         </div>
         <div class="modal-body">
           <div id="sourcesOptions">
-            <div class="md-form active-pink active-pink-2 mb-3 mt-0">
-              <input class="form-control" type="text" oninput="RefreshSourcesDiv('name',this.value);" placeholder="Search by source name"
-                aria-label="Search by source name">
-            </div>
+            <input class="form-control" type="text" oninput="RefreshSourcesDiv('name',this.value);" placeholder="Search by source name">
           </div>
           <div id="resultSources">
           </div>
@@ -211,9 +213,9 @@
   </div>
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">NewsApiImpl</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-      aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand" href="#">News Api App</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -225,8 +227,8 @@
           <a class="nav-link" href="#" onclick="ShowStartupNews();">Top headlines</a>
         </li>
         <li class="nav-item dropdown active">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
             Country
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -238,8 +240,8 @@
             <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCountry('us');">USA</a>
         </li>
         <li class="nav-item dropdown active">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
             Category
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -256,37 +258,38 @@
         <input class="form-control mr-sm-2" type="search" placeholder="Search" id="keywordSearchInput" aria-label="Search">
         <button class="btn  my-2 my-sm-0" type="submit" onclick="ShowSearchResultNews();">Search</button>
       </form>
-      </div>
+    </div>
   </nav>
 
+  <style>
+    @media (min-width:700px) {
+      .card-columns {
+        column-count: 1;
+      }
+    }
+
+    @media (min-width:1000px) {
+      .card-columns {
+        column-count: 2;
+      }
+    }
+
+    @media (min-width:1300px) {
+      .card-columns {
+        column-count: 3;
+      }
+    }
+  </style>
+
   <div class="container">
-    <style>
-      @media (min-width:700px) {
-        .card-columns {
-          column-count: 1;
-        }
-      }
-
-      @media (min-width:1000px) {
-        .card-columns {
-          column-count: 2;
-        }
-      }
-
-      @media (min-width:1300px) {
-        .card-columns {
-          column-count: 3;
-        }
-      }
-    </style>
     <div class="card-columns" id='contentDiv'>
     </div>
   </div>
-
   <div style="text-align: center">
     Powered by
     <a href="https://newsapi.org" target="blank">News API</a>
   </div>
+
 </body>
 
 </html>
