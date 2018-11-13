@@ -5,15 +5,126 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  <!-- JQuery is used only by bootstrap -->
   <script>
     "use strict";
 
-    const newsApiKey = '46b315bb0b114a1499c1386739ae8d64';
+    const newsApiKey = 'cf4cb85ba9f447f6aa4c35febe6d5837';//'46b315bb0b114a1499c1386739ae8d64';
     const newsApiUrl = 'https://newsapi.org/v2/';
 
-    function GetNewsHtmlCart(index, article) {
-      let val = `<div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                  <div class="card mb-4">
+    function GetRequestHeaders() {
+      let requestHeaders = new Headers();
+      requestHeaders.append("X-Api-Key", newsApiKey);
+      requestHeaders.append("Authorization", newsApiKey);
+
+      let requestParametrs = {
+        method: 'GET',
+        headers: requestHeaders
+      }
+      return requestParametrs;
+    }
+
+    let sourcesClass;
+    let languages = new Map([['en', 'English'], ['ar', 'Sami '], ['de', 'Deutsch'], ['es', 'Spanish'], ['fr', 'French'], ['no', 'Norwegian'], ['ru', 'Russian']]);
+    let countrys = new Map([['au', 'Australia'], ['gb', 'United Kingdom'], ['in', 'India'], ['it', 'Italy'], ['za', 'South Africa'], ['se', 'Sweden'], ['no', 'Norway']]);
+    let categorys = new Map([['business', 'Business'], ['entertainment', 'Entertainment'], ['general', 'General'], ['health', 'Health'], ['science', 'Science'], ['sports', 'Sports'], ['technology', 'Technology']]);
+
+    class NewsSources {
+      constructor(sources) {
+        this.sourcesSet = new Set(sources);
+      }
+      get allSources() {
+        return this.sourcesSet;
+      }
+      get sourcesByLanguage() {
+        return new Set([...this.sourcesSet].filter(x => x.language === this.filterValue));
+      }
+      get sourcesByCountry() {
+        return new Set([...this.sourcesSet].filter(x => x.country === this.filterValue));
+      }
+      get sourcesByName() {
+        return new Set([...this.sourcesSet].filter(x => x.name.includes(this.filterValue)));
+      }
+      get sourcesByCategory() {
+        return new Set([...this.sourcesSet].filter(x => x.category === this.filterValue));
+      }
+    }
+
+    function RefreshSourcesDiv(filterType, filterValue) {
+      let filteredSources;
+      sourcesClass.filterValue = filterValue;
+      switch (filterType) {
+        case 'language':
+          filteredSources = sourcesClass.sourcesByLanguage;
+          break;
+        case 'country':
+          filteredSources = sourcesClass.sourcesByCountry;
+          break;
+        case 'category':
+          filteredSources = sourcesClass.sourcesByCategory;
+          break;
+        case 'name':
+          filteredSources = sourcesClass.sourcesByName;
+          break;
+        default:
+          filteredSources = sourcesClass.allSources;
+          break;
+      }
+
+      let sourcesDiv = document.getElementById("resultSources");
+      sourcesDiv.innerHTML = '';
+      filteredSources.forEach((item) => {
+        let elem = document.createElement("a");
+        elem.appendChild(document.createTextNode(item.name));
+        elem.href = "#";
+        elem.onclick = () => {
+          ShowNewsForSource(item.id);
+          document.getElementById('modalCloseButton').click();
+        }
+        sourcesDiv.appendChild(elem);
+        sourcesDiv.appendChild(document.createTextNode(" |"));
+      });
+    }
+
+    function CreateSourceOptionDomElement(filterType, value, key) {
+      let newElement = document.createElement("div");
+      newElement.classList.add("btn");
+      newElement.onclick = () => { RefreshSourcesDiv(filterType, key); }
+      newElement.textContent = value;
+      return newElement;
+    }
+
+    function CreateSourceOptionsRow(filterType, elements) {
+      let newRow = document.createElement("div");
+      newRow.classList.add("row");
+      newRow.classList.add("border-bottom");
+      elements.forEach((value, key, array) => { newRow.appendChild(CreateSourceOptionDomElement(filterType, value, key)) });
+      return newRow;
+    }
+
+    function CreateSourceOptionsDiv() {
+      let sourcesStartupDiv = document.getElementById("sourcesOptions");
+      sourcesStartupDiv.appendChild(document.createTextNode("Show for language"));
+      sourcesStartupDiv.appendChild(CreateSourceOptionsRow('language', languages));
+      sourcesStartupDiv.appendChild(document.createTextNode("Show for country"));
+      sourcesStartupDiv.appendChild(CreateSourceOptionsRow('country', countrys));
+      sourcesStartupDiv.appendChild(document.createTextNode("Show for category"));
+      sourcesStartupDiv.appendChild(CreateSourceOptionsRow('category', categorys));
+    }
+
+    function LoadAllNewsSources() {
+      let getSourcesRequest = new Request(newsApiUrl + 'sources', GetRequestHeaders());
+      fetch(getSourcesRequest).then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        sourcesClass = new NewsSources(data.sources);
+        RefreshSourcesDiv();
+      });
+    }
+
+    function GetFormattedNewsCard(index, article) {
+      let val = `
+                  <div class="card">
                     <div class="card-header">Author: ${article.author}</div>
                     <img class="card-img-top" style="width: 100%; height: 15vw; object-fit: cover;" src="${article.urlToImage}" alt="Image">
                     <div class="card-body">
@@ -24,65 +135,83 @@
                     </div>
                     <p class="card-text"><small class="text-muted">${article.publishedAt}</small></p>
                   </div>
-                </div>`
+                `
       return val;
     }
-    function FormHtmlResult(jsonResponse) {
+
+    function GetFormattedNewsPageContent(jsonResponse) {
       let htmlResult = '';
       let articles = jsonResponse.articles.entries();
       for (let article of articles) {
-        htmlResult += GetNewsHtmlCart(article[0], article[1]);
+        htmlResult += GetFormattedNewsCard(article[0], article[1]);
       }
       return htmlResult;
     }
-    function ClearMainDiv() {
-      let contentDiv = document.getElementById("contentDiv");
-      contentDiv.innerHTML = '';
-    }
-    function FillMainDiv(htmlMarkup) {
-      let contentDiv = document.getElementById("contentDiv");
-      contentDiv.innerHTML = htmlMarkup;
-    }
-    function RefreshContent(urlParam) {
-      let requestHeaders = new Headers();
-      requestHeaders.append("X-Api-Key", newsApiKey);
-      requestHeaders.append("Authorization", newsApiKey);
 
-      let requestParametrs = {
-        method: 'GET',
-        headers: requestHeaders
-      }
-
-      let getArticleRequest = new Request(newsApiUrl + urlParam, requestParametrs);
+    function RefreshNewsPageContent(urlParam) {
+      let getArticleRequest = new Request(newsApiUrl + urlParam, GetRequestHeaders());
 
       fetch(getArticleRequest).then(function (response) {
         return response.json();
       }).then(function (data) {
-        let htmlMarkup = FormHtmlResult(data);
-        ClearMainDiv();
-        FillMainDiv(htmlMarkup);
+        let htmlMarkup = GetFormattedNewsPageContent(data);
+        let contentDiv = document.getElementById("contentDiv");
+        contentDiv.innerHTML = '';
+        contentDiv.innerHTML = htmlMarkup;
       });
 
     }
 
-    function GetNewsByCountry(country) {
-      RefreshContent(`top-headlines?country=${country}`);
+    function ShowHeadlineNewsForCountry(country) {
+      RefreshNewsPageContent(`top-headlines?country=${country}`);
     }
-    function GetNewsByCategory(category) {
-      RefreshContent(`top-headlines?country=us&category=${category}`);
+
+    function ShowHeadlineNewsForCategory(category) {
+      RefreshNewsPageContent(`top-headlines?country=us&category=${category}`);
     }
-    function GetNewsByKeyword() {
+
+    function ShowSearchResultNews() {
       let searchInput = document.getElementById("keywordSearchInput");
-      RefreshContent(`everything?q=${searchInput.value}`);
+      RefreshNewsPageContent(`everything?q=${searchInput.value}`);
     }
-    function GetNewsHeadline() {
-      GetNewsByCountry('gb');
+
+    function ShowNewsForSource(source) {
+      RefreshNewsPageContent(`everything?sources=${source}`);
     }
-    GetNewsHeadline();
+
+    function ShowStartupNews() {
+      ShowHeadlineNewsForCountry('gb');
+    }
+
+    function SetupPage() {
+      ShowStartupNews();
+      CreateSourceOptionsDiv();
+      LoadAllNewsSources();
+    }
   </script>
 </head>
 
-<body>
+<body onload="SetupPage();">
+  <div class="modal" id="sourceDialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Choose news source</h4>
+          <button type="button" class="close" id="modalCloseButton" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="sourcesOptions">
+            <div class="md-form active-pink active-pink-2 mb-3 mt-0">
+              <input class="form-control" type="text" oninput="RefreshSourcesDiv('name',this.value);" placeholder="Search by source name"
+                aria-label="Search by source name">
+            </div>
+          </div>
+          <div id="resultSources">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">NewsApiImpl</a>
@@ -93,7 +222,10 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#" onclick="GetNewsHeadline();">Top headlines</a>
+          <a class="nav-link" href="#" data-toggle="modal" data-target="#sourceDialog">Choose source</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="#" onclick="ShowStartupNews();">Top headlines</a>
         </li>
         <li class="nav-item dropdown active">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
@@ -101,12 +233,12 @@
             Country
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#" onclick="GetNewsByCountry('de');">Germany</a>
-            <a class="dropdown-item" href="#" onclick="GetNewsByCountry('fr');">France</a>
-            <a class="dropdown-item" href="#" onclick="GetNewsByCountry('gb');">Great Britain</a>
-            <a class="dropdown-item" href="#" onclick="GetNewsByCountry('ru');">Russia</a>
-            <a class="dropdown-item" href="#" onclick="GetNewsByCountry('ua');">Ukraine</a>
-            <a class="dropdown-item" href="#" onclick="GetNewsByCountry('us');">USA</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCountry('de');">Germany</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCountry('fr');">France</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCountry('gb');">Great Britan</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCountry('ru');">Russia</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCountry('ua');">Ukraine</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCountry('us');">USA</a>
         </li>
         <li class="nav-item dropdown active">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
@@ -114,29 +246,49 @@
             Category
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('business');">Business</a>
-            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('entertainment');">Entertainment</a>
-            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('general');">General</a>
-            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('health');">Health</a>
-            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('science');">Science</a>
-            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('sports');">Sports</a>
-            <a class="dropdown-item" href="#" onclick="GetNewsByCategory('technology');">Technology</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCategory('business');">Business</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCategory('enterment');">Enterment</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCategory('general');">General</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCategory('health');">Health</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCategory('science');">Science</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCategory('sports');">Sports</a>
+            <a class="dropdown-item" href="#" onclick="ShowHeadlineNewsForCategory('technology');">Technology</a>
         </li>
       </ul>
       <form class="form-inline my-2 my-lg-0">
         <input class="form-control mr-sm-2" type="search" placeholder="Search" id="keywordSearchInput" aria-label="Search">
-        <button class="btn  my-2 my-sm-0" type="submit" onclick="GetNewsByKeyword();">Search</button>
+        <button class="btn  my-2 my-sm-0" type="submit" onclick="ShowSearchResultNews();">Search</button>
       </form>
       </div>
   </nav>
 
   <div class="container">
-    <div class="card-deck" id='contentDiv'>
+    <style>
+      @media (min-width:600px) {
+        .card-columns {
+          column-count: 1;
+        }
+      }
+
+      @media (min-width:900px) {
+        .card-columns {
+          column-count: 2;
+        }
+      }
+
+      @media (min-width:1200px) {
+        .card-columns {
+          column-count: 3;
+        }
+      }
+    </style>
+    <div class="card-columns" id='contentDiv'>
     </div>
   </div>
 
   <div style="text-align: center">
-    Powered by <a href="https://newsapi.org" target="blank">News API</a>
+    Powered by
+    <a href="https://newsapi.org" target="blank">News API</a>
   </div>
 </body>
 
