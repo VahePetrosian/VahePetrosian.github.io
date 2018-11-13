@@ -125,7 +125,7 @@
     function GetFormattedNewsCard(index, article) {
       let val = `<div class="card">
                     <div class="card-header">Author: ${article.author?article.author:'Unknown'}</div>
-                    <img class="card-img-top" style="width: 100%; height: 15vw; object-fit: cover;" src="${article.urlToImage}" onerror="this.style.display='none'">
+                    <img class="card-img-top" style="height: 100%; object-fit: cover;" src="${article.urlToImage}" onerror="this.style.display='none'">
                     <div class="card-body">
                       <h5 class="card-title">${article.title?article.title:'No title'}</h5>
                       <hr>
