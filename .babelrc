@@ -1,0 +1,16 @@
+{
+    "presets": [
+      ["@babel/preset-env", {
+        "targets": {
+          "browsers": [
+            "last 4 Chrome versions",
+            "last 4 FireFox versions",
+            "last 4 Safari versions",
+            "Explorer >= 8",
+            "last 4 Edge versions"
+          ]
+        },
+        "useBuiltIns": "entry"
+      }]
+    ]
+  }

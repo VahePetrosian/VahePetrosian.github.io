@@ -1,0 +1,34 @@
+{
+  "name": "news_api",
+  "version": "1.0.0",
+  "description": "FCMP 2018 Homework",
+  "main": "common.js",
+  "scripts": {
+    "build": "babel src -d js",
+    "watch": "babel src -d js -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VahePetrosian/VahePetrosian.github.io.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VahePetrosian/VahePetrosian.github.io/issues"
+  },
+  "homepage": "https://github.com/VahePetrosian/VahePetrosian.github.io#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.6",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.1.6",
+    "babelify": "^10.0.0",
+    "es6-promise": "^4.2.5",
+    "isomorphic-fetch": "^2.2.1",
+    "promise-polyfill": "^8.1.0",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "dependencies": {
+    "uniq": "^1.0.1"
+  }
+}

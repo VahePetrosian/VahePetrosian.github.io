@@ -3,6 +3,9 @@
 const newsApiKey = 'cf4cb85ba9f447f6aa4c35febe6d5837';
 const newsApiUrl = 'https://newsapi.org/v2/';
 
+import 'promise-polyfill/src/polyfill';
+import 'whatwg-fetch';
+
 function GetRequestHeaders() {
   let requestHeaders = new Headers();
   requestHeaders.append("X-Api-Key", newsApiKey);

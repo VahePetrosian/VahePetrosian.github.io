@@ -24,8 +24,9 @@ function GetFormattedNewsPageContent(jsonResponse) {
 
 function RefreshNewsPageContent(urlParam) {
     let getArticleRequest = new Request(newsApiUrl + urlParam, GetRequestHeaders());
+    
 
-    fetch(getArticleRequest).then(function (response) {
+    window.fetch(getArticleRequest).then(function (response) {
         return response.json();
     }).then(function (data) {
         let htmlMarkup = GetFormattedNewsPageContent(data);
