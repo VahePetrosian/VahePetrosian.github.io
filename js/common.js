@@ -1,9 +1,5 @@
 "use strict";
 
-require("promise-polyfill/src/polyfill");
-
-require("whatwg-fetch");
-
 var newsApiKey = 'cf4cb85ba9f447f6aa4c35febe6d5837';
 var newsApiUrl = 'https://newsapi.org/v2/';
 
