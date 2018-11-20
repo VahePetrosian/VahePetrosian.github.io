@@ -1,13 +1,14 @@
+//only certain browsers because of this https://github.com/babel/babel/issues/7789
 {
     "presets": [
       ["@babel/preset-env", {
         "targets": {
           "browsers": [
-            "last 4 Chrome versions",
-            "last 4 FireFox versions",
-            "last 4 Safari versions",
-            "Explorer >= 8",
-            "last 4 Edge versions"
+            "last 2 Chrome versions",
+            "last 2 FireFox versions",
+            "last 2 Safari versions",
+            "Explorer >= 11",
+            "last 2 Edge versions"
           ]
         },
         "useBuiltIns": "entry"
