@@ -4,7 +4,7 @@
   "description": "FCMP 2018 Homework",
   "main": "common.js",
   "scripts": {
-    "build": "npm run babel_build & npm run browserify_build",
+    "start": "npm run babel_build & npm run browserify_build",
     "browserify_build": "browserify js/tmp.js -o js/bundle.js",
     "babel_build": "babel src --out-file js/tmp.js"
   },
