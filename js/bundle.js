@@ -275,6 +275,10 @@ window.onload = function () {
 };
 "use strict";
 
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function GetFormattedNewsCard(index, article) {
   var val = "<div class=\"card\">\n                  <div class=\"card-header\">Author: ".concat(article.author ? article.author : 'Unknown', "</div>\n                  <img class=\"card-img-top\" style=\"height: 100%; object-fit: cover;\" src=\"").concat(article.urlToImage ? article.urlToImage : '', "\" onerror=\"this.style.display='none'\">\n                  <div class=\"card-body\">\n                    <h5 class=\"card-title\">").concat(article.title ? article.title : 'No title', "</h5>\n                    <hr>\n                    <p class=\"card-text\">").concat(article.description ? article.description : 'No description', "</p>\n                    <a href=\"").concat(article.url, "\" target=\"blank\" class=\"justify-content-end\">More details</a>         \n                  </div>\n                  <p class=\"card-text\"><small class=\"text-muted\">").concat(article.publishedAt, "</small></p>\n                </div>");
   return val;
@@ -310,16 +314,43 @@ function GetFormattedNewsPageContent(jsonResponse) {
   return htmlResult;
 }
 
-function RefreshNewsPageContent(urlParam) {
-  var getArticleRequest = new Request(newsApiUrl + urlParam, GetRequestHeaders());
-  window.fetch(getArticleRequest).then(function (response) {
-    return response.json();
-  }).then(function (data) {
-    var htmlMarkup = GetFormattedNewsPageContent(data);
-    var contentDiv = document.getElementById("contentDiv");
-    contentDiv.innerHTML = '';
-    contentDiv.innerHTML = htmlMarkup;
-  });
+function RefreshNewsPageContent(_x) {
+  return _RefreshNewsPageContent.apply(this, arguments);
+}
+
+function _RefreshNewsPageContent() {
+  _RefreshNewsPageContent = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(urlParam) {
+    var getArticleRequest, response, data, htmlMarkup, contentDiv;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            getArticleRequest = new Request(newsApiUrl + urlParam, GetRequestHeaders());
+            _context.next = 3;
+            return fetch(getArticleRequest);
+
+          case 3:
+            response = _context.sent;
+            _context.next = 6;
+            return response.json();
+
+          case 6:
+            data = _context.sent;
+            htmlMarkup = GetFormattedNewsPageContent(data);
+            contentDiv = document.getElementById("contentDiv");
+            contentDiv.innerHTML = '';
+            contentDiv.innerHTML = htmlMarkup;
+
+          case 11:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+  return _RefreshNewsPageContent.apply(this, arguments);
 }
 
 global.ShowHeadlineNewsForCountry = function (country) {
@@ -339,6 +370,10 @@ global.ShowNewsForSource = function (source) {
   RefreshNewsPageContent("everything?sources=".concat(source));
 };
 "use strict";
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
@@ -415,13 +450,40 @@ function () {
 }();
 
 function LoadAllNewsSources() {
-  var getSourcesRequest = new Request(newsApiUrl + 'sources', GetRequestHeaders());
-  fetch(getSourcesRequest).then(function (response) {
-    return response.json();
-  }).then(function (data) {
-    sourcesClass = new NewsSources(data.sources);
-    RefreshSourcesDiv();
-  });
+  return _LoadAllNewsSources.apply(this, arguments);
+}
+
+function _LoadAllNewsSources() {
+  _LoadAllNewsSources = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee() {
+    var getSourcesRequest, response, data;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            getSourcesRequest = new Request(newsApiUrl + 'sources', GetRequestHeaders());
+            _context.next = 3;
+            return fetch(getSourcesRequest);
+
+          case 3:
+            response = _context.sent;
+            _context.next = 6;
+            return response.json();
+
+          case 6:
+            data = _context.sent;
+            sourcesClass = new NewsSources(data.sources);
+            RefreshSourcesDiv("", "");
+
+          case 9:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+  return _LoadAllNewsSources.apply(this, arguments);
 }
 
 global.RefreshSourcesDiv = function (filterType, filterValue) {
