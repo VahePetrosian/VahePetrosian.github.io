@@ -22,18 +22,15 @@ function GetFormattedNewsPageContent(jsonResponse) {
     return htmlResult;
 }
 
-function RefreshNewsPageContent(urlParam) {
+async function RefreshNewsPageContent(urlParam) {
     let getArticleRequest = new Request(newsApiUrl + urlParam, GetRequestHeaders());
-    
 
-    window.fetch(getArticleRequest).then(function (response) {
-        return response.json();
-    }).then(function (data) {
-        let htmlMarkup = GetFormattedNewsPageContent(data);
-        let contentDiv = document.getElementById("contentDiv");
-        contentDiv.innerHTML = '';
-        contentDiv.innerHTML = htmlMarkup;
-    });
+    const response = await fetch(getArticleRequest);
+    const data = await response.json();
+    let htmlMarkup = GetFormattedNewsPageContent(data);
+    let contentDiv = document.getElementById("contentDiv");
+    contentDiv.innerHTML = '';
+    contentDiv.innerHTML = htmlMarkup;
 }
 
 global.ShowHeadlineNewsForCountry = function (country) {

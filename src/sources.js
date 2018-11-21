@@ -24,14 +24,12 @@ class NewsSources {
     }
 }
 
-function LoadAllNewsSources() {
+async function LoadAllNewsSources() {
     let getSourcesRequest = new Request(newsApiUrl + 'sources', GetRequestHeaders());
-    fetch(getSourcesRequest).then(function (response) {
-        return response.json();
-    }).then(function (data) {
-        sourcesClass = new NewsSources(data.sources);
-        RefreshSourcesDiv();
-    });
+    const response = await fetch(getSourcesRequest);
+    const data = await response.json();
+    sourcesClass = new NewsSources(data.sources);
+    RefreshSourcesDiv("","");
 }
 
 global.RefreshSourcesDiv = function (filterType, filterValue) {
