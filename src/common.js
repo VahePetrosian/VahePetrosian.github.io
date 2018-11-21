@@ -6,8 +6,6 @@ import 'whatwg-fetch';
 const newsApiKey = 'cf4cb85ba9f447f6aa4c35febe6d5837';
 const newsApiUrl = 'https://newsapi.org/v2/';
 
-document.onload = SetupPage();
-
 function GetRequestHeaders() {
   let requestHeaders = new Headers();
   requestHeaders.append("X-Api-Key", newsApiKey);
@@ -20,11 +18,11 @@ function GetRequestHeaders() {
   return requestParametrs;
 }
 
-function ShowStartupNews() {
+global.ShowStartupNews = function () {
   ShowHeadlineNewsForCountry('gb');
 }
 
-function SetupPage() {
+window.onload = function () {
   ShowStartupNews();
   CreateSourceOptionsDiv();
   LoadAllNewsSources();

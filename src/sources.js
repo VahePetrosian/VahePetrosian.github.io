@@ -34,7 +34,7 @@ function LoadAllNewsSources() {
     });
 }
 
-function RefreshSourcesDiv(filterType, filterValue) {
+global.RefreshSourcesDiv = function (filterType, filterValue) {
     let filteredSources;
     sourcesClass.filterValue = filterValue;
     switch (filterType) {

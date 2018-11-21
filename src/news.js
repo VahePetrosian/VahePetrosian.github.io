@@ -36,19 +36,19 @@ function RefreshNewsPageContent(urlParam) {
     });
 }
 
-function ShowHeadlineNewsForCountry(country) {
+global.ShowHeadlineNewsForCountry = function (country) {
     RefreshNewsPageContent(`top-headlines?country=${country}`);
 }
 
-function ShowHeadlineNewsForCategory(category) {
+global.ShowHeadlineNewsForCategory = function (category) {
     RefreshNewsPageContent(`top-headlines?country=us&category=${category}`);
 }
 
-function ShowSearchResultNews() {
+global.ShowSearchResultNews = function () {
     let searchInput = document.getElementById("keywordSearchInput");
     RefreshNewsPageContent(`everything?q=${searchInput.value}`);
 }
 
-function ShowNewsForSource(source) {
+global.ShowNewsForSource = function (source) {
     RefreshNewsPageContent(`everything?sources=${source}`);
 }

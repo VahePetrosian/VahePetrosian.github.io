@@ -1,4 +1,5 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+(function (global){
 "use strict";
 
 require("core-js/modules/es6.array.copy-within");
@@ -251,7 +252,6 @@ require("whatwg-fetch");
 
 var newsApiKey = 'cf4cb85ba9f447f6aa4c35febe6d5837';
 var newsApiUrl = 'https://newsapi.org/v2/';
-document.onload = SetupPage();
 
 function GetRequestHeaders() {
   var requestHeaders = new Headers();
@@ -264,15 +264,15 @@ function GetRequestHeaders() {
   return requestParametrs;
 }
 
-function ShowStartupNews() {
+global.ShowStartupNews = function () {
   ShowHeadlineNewsForCountry('gb');
-}
+};
 
-function SetupPage() {
+window.onload = function () {
   ShowStartupNews();
   CreateSourceOptionsDiv();
   LoadAllNewsSources();
-}
+};
 "use strict";
 
 function GetFormattedNewsCard(index, article) {
@@ -322,22 +322,22 @@ function RefreshNewsPageContent(urlParam) {
   });
 }
 
-function ShowHeadlineNewsForCountry(country) {
+global.ShowHeadlineNewsForCountry = function (country) {
   RefreshNewsPageContent("top-headlines?country=".concat(country));
-}
+};
 
-function ShowHeadlineNewsForCategory(category) {
+global.ShowHeadlineNewsForCategory = function (category) {
   RefreshNewsPageContent("top-headlines?country=us&category=".concat(category));
-}
+};
 
-function ShowSearchResultNews() {
+global.ShowSearchResultNews = function () {
   var searchInput = document.getElementById("keywordSearchInput");
   RefreshNewsPageContent("everything?q=".concat(searchInput.value));
-}
+};
 
-function ShowNewsForSource(source) {
+global.ShowNewsForSource = function (source) {
   RefreshNewsPageContent("everything?sources=".concat(source));
-}
+};
 "use strict";
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
@@ -424,7 +424,7 @@ function LoadAllNewsSources() {
   });
 }
 
-function RefreshSourcesDiv(filterType, filterValue) {
+global.RefreshSourcesDiv = function (filterType, filterValue) {
   var filteredSources;
   sourcesClass.filterValue = filterValue;
 
@@ -465,7 +465,7 @@ function RefreshSourcesDiv(filterType, filterValue) {
     sourcesDiv.appendChild(elem);
     sourcesDiv.appendChild(document.createTextNode(" |"));
   });
-}
+};
 
 function CreateSourceOptionDomElement(filterType, value, key) {
   var newElement = document.createElement("div");
@@ -499,6 +499,7 @@ function CreateSourceOptionsDiv() {
   sourcesStartupDiv.appendChild(CreateSourceOptionsRow('category', categorys));
 }
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"core-js/modules/es6.array.copy-within":115,"core-js/modules/es6.array.fill":116,"core-js/modules/es6.array.find":118,"core-js/modules/es6.array.find-index":117,"core-js/modules/es6.array.from":119,"core-js/modules/es6.array.iterator":120,"core-js/modules/es6.array.of":121,"core-js/modules/es6.array.species":122,"core-js/modules/es6.date.to-primitive":123,"core-js/modules/es6.function.has-instance":124,"core-js/modules/es6.function.name":125,"core-js/modules/es6.map":126,"core-js/modules/es6.math.acosh":127,"core-js/modules/es6.math.asinh":128,"core-js/modules/es6.math.atanh":129,"core-js/modules/es6.math.cbrt":130,"core-js/modules/es6.math.clz32":131,"core-js/modules/es6.math.cosh":132,"core-js/modules/es6.math.expm1":133,"core-js/modules/es6.math.fround":134,"core-js/modules/es6.math.hypot":135,"core-js/modules/es6.math.imul":136,"core-js/modules/es6.math.log10":137,"core-js/modules/es6.math.log1p":138,"core-js/modules/es6.math.log2":139,"core-js/modules/es6.math.sign":140,"core-js/modules/es6.math.sinh":141,"core-js/modules/es6.math.tanh":142,"core-js/modules/es6.math.trunc":143,"core-js/modules/es6.number.constructor":144,"core-js/modules/es6.number.epsilon":145,"core-js/modules/es6.number.is-finite":146,"core-js/modules/es6.number.is-integer":147,"core-js/modules/es6.number.is-nan":148,"core-js/modules/es6.number.is-safe-integer":149,"core-js/modules/es6.number.max-safe-integer":150,"core-js/modules/es6.number.min-safe-integer":151,"core-js/modules/es6.number.parse-float":152,"core-js/modules/es6.number.parse-int":153,"core-js/modules/es6.object.assign":154,"core-js/modules/es6.object.freeze":155,"core-js/modules/es6.object.get-own-property-descriptor":156,"core-js/modules/es6.object.get-own-property-names":157,"core-js/modules/es6.object.get-prototype-of":158,"core-js/modules/es6.object.is":162,"core-js/modules/es6.object.is-extensible":159,"core-js/modules/es6.object.is-frozen":160,"core-js/modules/es6.object.is-sealed":161,"core-js/modules/es6.object.keys":163,"core-js/modules/es6.object.prevent-extensions":164,"core-js/modules/es6.object.seal":165,"core-js/modules/es6.promise":166,"core-js/modules/es6.reflect.apply":167,"core-js/modules/es6.reflect.construct":168,"core-js/modules/es6.reflect.define-property":169,"core-js/modules/es6.reflect.delete-property":170,"core-js/modules/es6.reflect.get":173,"core-js/modules/es6.reflect.get-own-property-descriptor":171,"core-js/modules/es6.reflect.get-prototype-of":172,"core-js/modules/es6.reflect.has":174,"core-js/modules/es6.reflect.is-extensible":175,"core-js/modules/es6.reflect.own-keys":176,"core-js/modules/es6.reflect.prevent-extensions":177,"core-js/modules/es6.reflect.set":179,"core-js/modules/es6.reflect.set-prototype-of":178,"core-js/modules/es6.regexp.constructor":180,"core-js/modules/es6.regexp.flags":181,"core-js/modules/es6.regexp.match":182,"core-js/modules/es6.regexp.replace":183,"core-js/modules/es6.regexp.search":184,"core-js/modules/es6.regexp.split":185,"core-js/modules/es6.regexp.to-string":186,"core-js/modules/es6.set":187,"core-js/modules/es6.string.anchor":188,"core-js/modules/es6.string.big":189,"core-js/modules/es6.string.blink":190,"core-js/modules/es6.string.bold":191,"core-js/modules/es6.string.code-point-at":192,"core-js/modules/es6.string.ends-with":193,"core-js/modules/es6.string.fixed":194,"core-js/modules/es6.string.fontcolor":195,"core-js/modules/es6.string.fontsize":196,"core-js/modules/es6.string.from-code-point":197,"core-js/modules/es6.string.includes":198,"core-js/modules/es6.string.italics":199,"core-js/modules/es6.string.iterator":200,"core-js/modules/es6.string.link":201,"core-js/modules/es6.string.raw":202,"core-js/modules/es6.string.repeat":203,"core-js/modules/es6.string.small":204,"core-js/modules/es6.string.starts-with":205,"core-js/modules/es6.string.strike":206,"core-js/modules/es6.string.sub":207,"core-js/modules/es6.string.sup":208,"core-js/modules/es6.symbol":209,"core-js/modules/es6.typed.array-buffer":210,"core-js/modules/es6.typed.float32-array":211,"core-js/modules/es6.typed.float64-array":212,"core-js/modules/es6.typed.int16-array":213,"core-js/modules/es6.typed.int32-array":214,"core-js/modules/es6.typed.int8-array":215,"core-js/modules/es6.typed.uint16-array":216,"core-js/modules/es6.typed.uint32-array":217,"core-js/modules/es6.typed.uint8-array":218,"core-js/modules/es6.typed.uint8-clamped-array":219,"core-js/modules/es6.weak-map":220,"core-js/modules/es6.weak-set":221,"core-js/modules/es7.array.includes":222,"core-js/modules/es7.object.define-getter":223,"core-js/modules/es7.object.define-setter":224,"core-js/modules/es7.object.entries":225,"core-js/modules/es7.object.get-own-property-descriptors":226,"core-js/modules/es7.object.lookup-getter":227,"core-js/modules/es7.object.lookup-setter":228,"core-js/modules/es7.object.values":229,"core-js/modules/es7.promise.finally":230,"core-js/modules/es7.string.pad-end":231,"core-js/modules/es7.string.pad-start":232,"core-js/modules/es7.symbol.async-iterator":233,"core-js/modules/web.dom.iterable":234,"core-js/modules/web.immediate":235,"core-js/modules/web.timers":236,"regenerator-runtime/runtime":237,"whatwg-fetch":238}],2:[function(require,module,exports){
 module.exports = function (it) {
   if (typeof it != 'function') throw TypeError(it + ' is not a function!');
