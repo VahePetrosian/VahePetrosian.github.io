@@ -1,8 +1,3 @@
-let sourcesClass;
-let languages = new Map([['en', 'English'], ['ar', 'Sami '], ['de', 'Deutsch'], ['es', 'Spanish'], ['fr', 'French'], ['no', 'Norwegian'], ['ru', 'Russian']]);
-let countrys = new Map([['au', 'Australia'], ['gb', 'United Kingdom'], ['in', 'India'], ['it', 'Italy'], ['za', 'South Africa'], ['se', 'Sweden'], ['no', 'Norway']]);
-let categorys = new Map([['business', 'Business'], ['entertainment', 'Entertainment'], ['general', 'General'], ['health', 'Health'], ['science', 'Science'], ['sports', 'Sports'], ['technology', 'Technology']]);
-
 class NewsSources {
     constructor(sources) {
         this.sourcesSet = new Set(sources);
@@ -24,72 +19,80 @@ class NewsSources {
     }
 }
 
-async function LoadAllNewsSources() {
-    let getSourcesRequest = new Request(newsApiUrl + 'sources', GetRequestHeaders());
-    const response = await fetch(getSourcesRequest);
-    const data = await response.json();
-    sourcesClass = new NewsSources(data.sources);
-    RefreshSourcesDiv("","");
-}
+export class SourcesHandler {
+    constructor(newsApiUrl, authHeader, newsHandler) {
+        this.newsHandler = newsHandler;
+        this.requestHeader = authHeader;
+        this.url = newsApiUrl;
+        this.languages = new Map([['en', 'English'], ['ar', 'Sami '], ['de', 'Deutsch'], ['es', 'Spanish'], ['fr', 'French'], ['no', 'Norwegian'], ['ru', 'Russian']]);
+        this.countrys = new Map([['au', 'Australia'], ['gb', 'United Kingdom'], ['in', 'India'], ['it', 'Italy'], ['za', 'South Africa'], ['se', 'Sweden'], ['no', 'Norway']]);
+        this.categorys = new Map([['business', 'Business'], ['entertainment', 'Entertainment'], ['general', 'General'], ['health', 'Health'], ['science', 'Science'], ['sports', 'Sports'], ['technology', 'Technology']]);
+    }
+    async LoadAllNewsSources() {
+        let getSourcesRequest = new Request(this.url + 'sources', this.requestHeader);
+        const response = await fetch(getSourcesRequest);
+        const data = await response.json();
+        this.sourcesClass = new NewsSources(data.sources);
+        this.RefreshSourcesDiv("", "");
+    }
+    RefreshSourcesDiv(filterType, filterValue) {
+        let filteredSources;
+        this.sourcesClass.filterValue = filterValue;
+        switch (filterType) {
+            case 'language':
+                filteredSources = this.sourcesClass.sourcesByLanguage;
+                break;
+            case 'country':
+                filteredSources = this.sourcesClass.sourcesByCountry;
+                break;
+            case 'category':
+                filteredSources = this.sourcesClass.sourcesByCategory;
+                break;
+            case 'name':
+                filteredSources = this.sourcesClass.sourcesByName;
+                break;
+            default:
+                filteredSources = this.sourcesClass.allSources;
+                break;
+        }
 
-global.RefreshSourcesDiv = function (filterType, filterValue) {
-    let filteredSources;
-    sourcesClass.filterValue = filterValue;
-    switch (filterType) {
-        case 'language':
-            filteredSources = sourcesClass.sourcesByLanguage;
-            break;
-        case 'country':
-            filteredSources = sourcesClass.sourcesByCountry;
-            break;
-        case 'category':
-            filteredSources = sourcesClass.sourcesByCategory;
-            break;
-        case 'name':
-            filteredSources = sourcesClass.sourcesByName;
-            break;
-        default:
-            filteredSources = sourcesClass.allSources;
-            break;
+        let sourcesDiv = document.getElementById("resultSources");
+        sourcesDiv.innerHTML = '';
+        filteredSources.forEach((item) => {
+            let elem = document.createElement("a");
+            elem.appendChild(document.createTextNode(item.name));
+            elem.href = "#";
+            elem.onclick = () => {
+                this.newsHandler.ShowNewsForSource(item.id);
+                document.getElementById('modalCloseButton').click();
+            }
+            sourcesDiv.appendChild(elem);
+            sourcesDiv.appendChild(document.createTextNode(" |"));
+        });
+    }
+    CreateSourceOptionDomElement(filterType, value, key) {
+        let newElement = document.createElement("div");
+        newElement.classList.add("btn");
+        newElement.onclick = () => { this.RefreshSourcesDiv(filterType, key); }
+        newElement.textContent = value;
+        return newElement;
     }
 
-    let sourcesDiv = document.getElementById("resultSources");
-    sourcesDiv.innerHTML = '';
-    filteredSources.forEach((item) => {
-        let elem = document.createElement("a");
-        elem.appendChild(document.createTextNode(item.name));
-        elem.href = "#";
-        elem.onclick = () => {
-            ShowNewsForSource(item.id);
-            document.getElementById('modalCloseButton').click();
-        }
-        sourcesDiv.appendChild(elem);
-        sourcesDiv.appendChild(document.createTextNode(" |"));
-    });
-}
+    CreateSourceOptionsRow(filterType, elements) {
+        let newRow = document.createElement("div");
+        newRow.classList.add("row");
+        newRow.classList.add("border-bottom");
+        elements.forEach((value, key, array) => { newRow.appendChild(this.CreateSourceOptionDomElement(filterType, value, key)) });
+        return newRow;
+    }
 
-function CreateSourceOptionDomElement(filterType, value, key) {
-    let newElement = document.createElement("div");
-    newElement.classList.add("btn");
-    newElement.onclick = () => { RefreshSourcesDiv(filterType, key); }
-    newElement.textContent = value;
-    return newElement;
-}
-
-function CreateSourceOptionsRow(filterType, elements) {
-    let newRow = document.createElement("div");
-    newRow.classList.add("row");
-    newRow.classList.add("border-bottom");
-    elements.forEach((value, key, array) => { newRow.appendChild(CreateSourceOptionDomElement(filterType, value, key)) });
-    return newRow;
-}
-
-function CreateSourceOptionsDiv() {
-    let sourcesStartupDiv = document.getElementById("sourcesOptions");
-    sourcesStartupDiv.appendChild(document.createTextNode("Show for language"));
-    sourcesStartupDiv.appendChild(CreateSourceOptionsRow('language', languages));
-    sourcesStartupDiv.appendChild(document.createTextNode("Show for country"));
-    sourcesStartupDiv.appendChild(CreateSourceOptionsRow('country', countrys));
-    sourcesStartupDiv.appendChild(document.createTextNode("Show for category"));
-    sourcesStartupDiv.appendChild(CreateSourceOptionsRow('category', categorys));
+    CreateSourceOptionsDiv() {
+        let sourcesStartupDiv = document.getElementById("sourcesOptions");
+        sourcesStartupDiv.appendChild(document.createTextNode("Show for language"));
+        sourcesStartupDiv.appendChild(this.CreateSourceOptionsRow('language', this.languages));
+        sourcesStartupDiv.appendChild(document.createTextNode("Show for country"));
+        sourcesStartupDiv.appendChild(this.CreateSourceOptionsRow('country', this.countrys));
+        sourcesStartupDiv.appendChild(document.createTextNode("Show for category"));
+        sourcesStartupDiv.appendChild(this.CreateSourceOptionsRow('category', this.categorys));
+    }
 }

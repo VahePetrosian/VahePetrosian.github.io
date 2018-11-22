@@ -1,51 +1,57 @@
-function GetFormattedNewsCard(index, article) {
-    let val = `<div class="card">
-                  <div class="card-header">Author: ${article.author ? article.author : 'Unknown'}</div>
-                  <img class="card-img-top" style="height: 100%; object-fit: cover;" src="${article.urlToImage ? article.urlToImage : ''}" onerror="this.style.display='none'">
-                  <div class="card-body">
-                    <h5 class="card-title">${article.title ? article.title : 'No title'}</h5>
-                    <hr>
-                    <p class="card-text">${article.description ? article.description : 'No description'}</p>
-                    <a href="${article.url}" target="blank" class="justify-content-end">More details</a>         
-                  </div>
-                  <p class="card-text"><small class="text-muted">${article.publishedAt}</small></p>
-                </div>`
-    return val;
-}
-
-function GetFormattedNewsPageContent(jsonResponse) {
-    let htmlResult = '';
-    let articles = jsonResponse.articles.entries();
-    for (let article of articles) {
-        htmlResult += GetFormattedNewsCard(article[0], article[1]);
+export class NewsHandler {
+    constructor(newsApiUrl, authHeader) {
+        this.requestHeader = authHeader;
+        this.url = newsApiUrl;
     }
-    return htmlResult;
-}
+    GetFormattedNewsCard(index, article) {
+        let val = `<div class="card">
+                      <div class="card-header">Author: ${article.author ? article.author : 'Unknown'}</div>
+                      <img class="card-img-top" style="height: 100%; object-fit: cover;" src="${article.urlToImage ? article.urlToImage : ''}" onerror="this.style.display='none'">
+                      <div class="card-body">
+                        <h5 class="card-title">${article.title ? article.title : 'No title'}</h5>
+                        <hr>
+                        <p class="card-text">${article.description ? article.description : 'No description'}</p>
+                        <a href="${article.url}" target="blank" class="justify-content-end">More details</a>         
+                      </div>
+                      <p class="card-text"><small class="text-muted">${article.publishedAt}</small></p>
+                    </div>`
+        return val;
+    }
 
-async function RefreshNewsPageContent(urlParam) {
-    let getArticleRequest = new Request(newsApiUrl + urlParam, GetRequestHeaders());
+    GetFormattedNewsPageContent(jsonResponse) {
+        let htmlResult = '';
+        let articles = jsonResponse.articles.entries();
+        for (let article of articles) {
+            htmlResult += this.GetFormattedNewsCard(article[0], article[1]);
+        }
+        return htmlResult;
+    }
 
-    const response = await fetch(getArticleRequest);
-    const data = await response.json();
-    let htmlMarkup = GetFormattedNewsPageContent(data);
-    let contentDiv = document.getElementById("contentDiv");
-    contentDiv.innerHTML = '';
-    contentDiv.innerHTML = htmlMarkup;
-}
+    async RefreshNewsPageContent(urlParam) {
+        let getArticleRequest = new Request(this.url + urlParam, this.requestHeader);
 
-global.ShowHeadlineNewsForCountry = function (country) {
-    RefreshNewsPageContent(`top-headlines?country=${country}`);
-}
+        const response = await fetch(getArticleRequest);
+        const data = await response.json();
+        let htmlMarkup = this.GetFormattedNewsPageContent(data);
+        let contentDiv = document.getElementById("contentDiv");
+        contentDiv.innerHTML = '';
+        contentDiv.innerHTML = htmlMarkup;
+    }
 
-global.ShowHeadlineNewsForCategory = function (category) {
-    RefreshNewsPageContent(`top-headlines?country=us&category=${category}`);
-}
+    ShowHeadlineNewsForCountry(country) {
+        this.RefreshNewsPageContent(`top-headlines?country=${country}`);
+    }
 
-global.ShowSearchResultNews = function () {
-    let searchInput = document.getElementById("keywordSearchInput");
-    RefreshNewsPageContent(`everything?q=${searchInput.value}`);
-}
+    ShowHeadlineNewsForCategory(category) {
+        this.RefreshNewsPageContent(`top-headlines?country=us&category=${category}`);
+    }
 
-global.ShowNewsForSource = function (source) {
-    RefreshNewsPageContent(`everything?sources=${source}`);
+    ShowSearchResultNews() {
+        let searchInput = document.getElementById("keywordSearchInput");
+        this.RefreshNewsPageContent(`everything?q=${searchInput.value}`);
+    }
+
+    ShowNewsForSource(source) {
+        this.RefreshNewsPageContent(`everything?sources=${source}`);
+    }
 }
