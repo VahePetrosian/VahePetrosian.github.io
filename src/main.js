@@ -2,6 +2,7 @@
 
 import '@babel/polyfill';
 import 'whatwg-fetch';
+import "./css/newsapi.less";
 import { NewsHandler } from "./news.js";
 import { SourcesHandler } from "./sources.js";
 

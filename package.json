@@ -5,9 +5,9 @@
   "main": "common.js",
   "scripts": {
     "start": "npm install & npm run build",
-    "build": "npm run babel_build & npm run browserify_build",
-    "browserify_build": "browserify tmp/common.js -o js/bundle.js",
-    "babel_build": "babel src -d tmp"
+    "dev": "webpack-dev-server --mode development --open",
+    "build": "webpack --mode production",
+    "build-dev": "webpack --mode development"
   },
   "repository": {
     "type": "git",
@@ -20,11 +20,20 @@
   },
   "homepage": "https://github.com/VahePetrosian/VahePetrosian.github.io#readme",
   "devDependencies": {
-    "@babel/cli": "^7.1.5",
-    "@babel/core": "^7.1.6",
     "@babel/polyfill": "^7.0.0",
-    "@babel/preset-env": "^7.1.6",
-    "browserify": "^16.2.3",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.4",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-3": "^6.24.1",
+    "css-loader": "^1.0.1",
+    "less": "^3.9.0",
+    "less-loader": "^4.1.0",
+    "path": "^0.12.7",
+    "style-loader": "^0.23.1",
+    "uglifyjs-webpack-plugin": "^2.0.1",
+    "webpack": "^4.26.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10",
     "whatwg-fetch": "^3.0.0"
   }
 }
