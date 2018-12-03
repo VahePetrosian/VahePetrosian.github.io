@@ -6,6 +6,8 @@ import "./css/newsapi.less";
 import { NewsHandler } from "./news.js";
 import { SourcesHandler } from "./sources.js";
 
+console.log('hello');
+
 const newsApiKey = 'cf4cb85ba9f447f6aa4c35febe6d5837';
 const newsApiUrl = 'https://newsapi.org/v2/';
 

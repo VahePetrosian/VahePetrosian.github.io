@@ -10,11 +10,14 @@ let conf = {
     devServer: {
         overlay: true
     },
+    resolveLoader : {
+        modules: ['node_modules', path.resolve(__dirname, 'loaders')]
+    },
     module: {
         rules: [
             {
-                test: /\.js&/,
-                loader: 'babel-loader'
+                test: /\.js$/,
+                use: [{loader: 'babel-loader'}, {loader: 'attributeCleanLoader' }] 
             },
             {
                 test: /\.less$/,
