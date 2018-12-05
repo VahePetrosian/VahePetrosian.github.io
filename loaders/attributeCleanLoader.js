@@ -1,4 +1,4 @@
 module.exports = function (source) {
-    let result = source.replace('hello', 'hi');
+    let result = source.replace('number', 'num');
     return result;
 }

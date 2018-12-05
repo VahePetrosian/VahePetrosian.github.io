@@ -16,8 +16,12 @@ let conf = {
     module: {
         rules: [
             {
+                test:  /\.json$/,
+                use: [{ loader: 'attributeCleanLoader'}]
+            },
+            {
                 test: /\.js$/,
-                use: [{ loader: 'babel-loader' }, { loader: 'attributeCleanLoader' }]
+                use: [{ loader: 'babel-loader'}]
             },
             {
                 test: /\.less$/,
