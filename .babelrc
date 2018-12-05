@@ -1,7 +1,9 @@
 //only certain browsers because of this https://github.com/babel/babel/issues/7789
 {
-    "presets": [
-      ["@babel/preset-env", {
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
         "targets": {
           "browsers": [
             "last 2 Chrome versions",
@@ -12,6 +14,10 @@
           ]
         },
         "useBuiltIns": "entry"
-      }]
+      }
     ]
-  }
+  ],
+  "plugins": [
+    "@babel/plugin-syntax-dynamic-import"
+  ]
+}

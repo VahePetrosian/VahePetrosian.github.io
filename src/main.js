@@ -26,7 +26,7 @@ function getAuthHeader() {
 let news = new NewsHandler(newsApiUrl, getAuthHeader());
 let sources = new SourcesHandler(newsApiUrl, getAuthHeader(), news);
 
-window.onload = function () {
+export function init() {
   news.ShowHeadlineNewsForCountry('gb');
   sources.CreateSourceOptionsDiv();
   sources.LoadAllNewsSources();

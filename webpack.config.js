@@ -1,7 +1,7 @@
-let path = require ('path');
+const path = require('path');
 
 let conf = {
-    entry: './src/main.js',
+    entry: './src/initial.js',
     output: {
         path: path.resolve(__dirname, './dist'),
         filename: 'bundle.js',
@@ -10,23 +10,23 @@ let conf = {
     devServer: {
         overlay: true
     },
-    resolveLoader : {
+    resolveLoader: {
         modules: ['node_modules', path.resolve(__dirname, 'loaders')]
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
-                use: [{loader: 'babel-loader'}, {loader: 'attributeCleanLoader' }] 
+                use: [{ loader: 'babel-loader' }, { loader: 'attributeCleanLoader' }]
             },
             {
                 test: /\.less$/,
                 use: [{
-                  loader: 'style-loader'
+                    loader: 'style-loader'
                 }, {
-                  loader: 'css-loader'
+                    loader: 'css-loader'
                 }, {
-                  loader: 'less-loader'
+                    loader: 'less-loader'
                 }]
             }
         ]
