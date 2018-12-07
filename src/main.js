@@ -1,8 +1,8 @@
 "use strict";
 import 'whatwg-fetch';
 import "./css/newsapi.less";
-import { NewsHandler } from "./news.js";
-import { SourcesHandler } from "./sources.js";
+import { NewsHandler } from "./news";
+import { SourcesHandler } from "./sources";
 
 const newsApiKey = 'cf4cb85ba9f447f6aa4c35febe6d5837';
 const newsApiUrl = 'https://newsapi.org/v2/';

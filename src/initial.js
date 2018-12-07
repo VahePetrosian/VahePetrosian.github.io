@@ -1,7 +1,9 @@
 import '@babel/polyfill';
 import "./css/overlay.less";
+import { ApiRequest } from './request';
 //import * as mod from 'main'
 //import * as err from 'errorHandler'
+//import * as req from 'request'
 
 function startButtonClick() {
   import('./main').then((mod) => {
@@ -21,7 +23,7 @@ function failingFunction() {
 
 function showError (message)
 {
-  import('./errorHandler').then((err) => {
+  import('./errorhandler').then((err) => {
     err.default.showErrorMessage(message);
   });
 }
@@ -30,6 +32,17 @@ const json = require('./json/test.json');
 console.log(json);
 
 window.onload = function () {
+  import('./request').then((req) => {
+    let requestHandler = new ApiRequest();
+    let getter = requestHandler.create("get");
+    let poster = requestHandler.create("post");
+    let deleter = requestHandler.create("delete");
+    let putter = requestHandler.create("put");
+    getter.say();
+    poster.say();
+    deleter.say();
+    putter.say();
+  });
   document.getElementById("showNewsButton").onclick = () => { startButtonClick(); }
   document.getElementById("casueErrorButton").onclick = () => { failingFunction(); }
 }
