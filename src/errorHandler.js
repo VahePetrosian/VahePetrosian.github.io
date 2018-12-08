@@ -1,10 +1,10 @@
 class ErrorHandler {
     constructor() {
-        this._title = "HANDLED ERROR!!!";
+        this._title = "SINGLETON ERROR HANDLER:";
     }
 
     showErrorMessage = (message) => {
-        alert(`${this._title}\n${message}`);
+        console.log(`${this._title} ${message}`);
     }
 }
 const errorHandler = new ErrorHandler();

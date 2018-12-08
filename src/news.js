@@ -1,8 +1,6 @@
+import { RequestProxy } from "./requestProxy";
+
 export class NewsHandler {
-    constructor(newsApiUrl, authHeader) {
-        this.requestHeader = authHeader;
-        this.url = newsApiUrl;
-    }
     GetFormattedNewsCard(index, article) {
         let val = `<div class="card">
                       <div class="card-header">Author: ${article.author ? article.author : 'Unknown'}</div>
@@ -28,10 +26,9 @@ export class NewsHandler {
     }
 
     async RefreshNewsPageContent(urlParam) {
-        let getArticleRequest = new Request(this.url + urlParam, this.requestHeader);
-
-        const response = await fetch(getArticleRequest);
-        const data = await response.json();
+        let requestProxy = new RequestProxy();
+        let requestHandler = requestProxy("getNews", urlParam);
+        let data = await requestHandler.getData();
         let htmlMarkup = this.GetFormattedNewsPageContent(data);
         let contentDiv = document.getElementById("contentDiv");
         contentDiv.innerHTML = '';

@@ -1,3 +1,5 @@
+import { RequestProxy } from "./requestProxy";
+
 class NewsSources {
     constructor(sources) {
         this.sourcesSet = new Set(sources);
@@ -20,21 +22,21 @@ class NewsSources {
 }
 
 export class SourcesHandler {
-    constructor(newsApiUrl, authHeader, newsHandler) {
+    constructor(newsHandler) {
         this.newsHandler = newsHandler;
-        this.requestHeader = authHeader;
-        this.url = newsApiUrl;
         this.languages = new Map([['en', 'English'], ['ar', 'Sami '], ['de', 'Deutsch'], ['es', 'Spanish'], ['fr', 'French'], ['no', 'Norwegian'], ['ru', 'Russian']]);
         this.countrys = new Map([['au', 'Australia'], ['gb', 'United Kingdom'], ['in', 'India'], ['it', 'Italy'], ['za', 'South Africa'], ['se', 'Sweden'], ['no', 'Norway']]);
         this.categorys = new Map([['business', 'Business'], ['entertainment', 'Entertainment'], ['general', 'General'], ['health', 'Health'], ['science', 'Science'], ['sports', 'Sports'], ['technology', 'Technology']]);
     }
+
     async LoadAllNewsSources() {
-        let getSourcesRequest = new Request(this.url + 'sources', this.requestHeader);
-        const response = await fetch(getSourcesRequest);
-        const data = await response.json();
+        let requestProxy = new RequestProxy();
+        let requestHandler = requestProxy("getSources");
+        let data = await requestHandler.getData();
         this.sourcesClass = new NewsSources(data.sources);
         this.RefreshSourcesDiv("", "");
     }
+
     RefreshSourcesDiv(filterType, filterValue) {
         let filteredSources;
         this.sourcesClass.filterValue = filterValue;
@@ -70,6 +72,7 @@ export class SourcesHandler {
             sourcesDiv.appendChild(document.createTextNode(" |"));
         });
     }
+
     CreateSourceOptionDomElement(filterType, value, key) {
         let newElement = document.createElement("div");
         newElement.classList.add("btn");
