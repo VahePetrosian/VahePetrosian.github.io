@@ -1,0 +1,215 @@
+cd to bin
+mongoimport -d frontcamp -c restaurants D:\fcmp\VahePetrosian.github.io\mongo\restaurants.json
+mongo
+use frontcamp
+
+query: db.restaurants.count()
+output: 25359
+
+3.1) 
+query: db.restaurants.find({cuisine:"Chinese", borough:"Queens"}).count()
+output: 728
+
+3.2)
+query: db.restaurants.find({},{_id:1}).sort({'grades.score':-1}).limit(1)
+output: { "_id" : ObjectId("5c0e6e6d0ef2e62284a01c63") }
+
+3.3)
+query : db.restaurants.updateMany({borough: "Manhattan"}, {$push:{grades:{grade:"A", score:7, date:ISODate()}}})
+output: {"acknowledged" : true, "matchedCount" : 10259, "modifiedCount" : 10259 }
+	or this way: db.restaurants.find({borough:"Manhattan"}).forEach(function(doc){db.restaurants.update({_id:doc._id}, {$push:{grades:{grade: "A",score: 7, date:ISODate()}}})})
+
+3.4)
+query: db.restaurants.find({"grades.8.score":{$lt:7}}, {_id:0, name:1})
+output:
+{ "name" : "Silver Krust West Indian Restaurant" }
+{ "name" : "Pure Food" }
+
+3.5) 
+query: db.restaurants.find({cuisine:"Seafood", grades:{$elemMatch:{grade:"B", date:{$gte:ISODate("2014-02-01"), $lte:ISODate("2014-03-01")}}}}, {_id:1, name:1})
+output:
+{ "_id" : ObjectId("5c0fdbc20ef2e62284a552bc"), "name" : "Los Primos Seafood Market" }
+{ "_id" : ObjectId("5c0fdbc20ef2e62284a55535"), "name" : "Catch" }
+
+4.1
+query: db.restaurants.createIndex({name:1})
+query: db.restaurants.explain().find({name:"Glorious Food"})
+"winningPlan" : {
+	"stage" : "FETCH",
+	"inputStage" : {
+		"stage" : "IXSCAN",
+		"keyPattern" : {
+				"name" : 1
+		},
+		"indexName" : "name_1",
+		"isMultiKey" : false,
+		"multiKeyPaths" : {
+				"name" : [ ]
+		},
+		"isUnique" : false,
+		"isSparse" : false,
+		"isPartial" : false,
+		"indexVersion" : 2,
+		"direction" : "forward",
+		"indexBounds" : {
+				"name" : [
+						"[\"Glorious Food\", \"Glorious Food\"]"
+				]
+		}
+	}
+}
+
+4.2
+query:  db.restaurants.dropIndex({name:1})
+output:
+{ "nIndexesWas" : 2, "ok" : 1 }
+
+4.3
+query: db.restaurants.createIndex({restaurant_id:1, borough:1})
+query: db.restaurants.explain().find({restaurant_id:"41098650"}, { _id:0, borough:1})
+"winningPlan" : {
+	"stage" : "PROJECTION",
+	"transformBy" : {
+		"_id" : 0,
+		"borough" : 1
+	},
+	"inputStage" : {
+		"stage" : "IXSCAN",
+		"keyPattern" : {
+			"restaurant_id" : 1,
+			"borough" : 1
+		},
+		"indexName" : "restaurant_id_1_borough_1",
+		"isMultiKey" : false,
+		"multiKeyPaths" : {
+			"restaurant_id" : [ ],
+			"borough" : [ ]
+		},
+		"isUnique" : false,
+		"isSparse" : false,
+		"isPartial" : false,
+		"indexVersion" : 2,
+		"direction" : "forward",
+		"indexBounds" : {
+			"restaurant_id" : [
+					"[\"41098650\", \"41098650\"]"
+			],
+			"borough" : [
+					"[MinKey, MaxKey]"
+			]
+		}
+	}
+}
+
+4.4
+query: db.restaurants.createIndex({cuisine:1}, {partialFilterExpression:{borough:"Staten Island"}})
+
+query: db.restaurants.explain().find({borough:"Staten Island", cuisine:"American"})
+"winningPlan" : {
+	"stage" : "FETCH",
+	"filter" : {
+		"borough" : {
+			"$eq" : "Staten Island"
+		}
+	},
+	"inputStage" : {
+		"stage" : "IXSCAN",
+		"keyPattern" : {
+			"cuisine" : 1
+		},
+		"indexName" : "cuisine_1",
+		"isMultiKey" : false,
+		"multiKeyPaths" : {
+			"cuisine" : [ ]
+		},
+		"isUnique" : false,
+		"isSparse" : false,
+		"isPartial" : true,
+		"indexVersion" : 2,
+		"direction" : "forward",
+		"indexBounds" : {
+			"cuisine" : [
+				"[\"American\", \"American\"]"
+			]
+		}
+	}
+}
+
+query: db.restaurants.explain().find({borough:"Staten Island", name:"Bagel Land"})
+"winningPlan" : {
+	"stage" : "COLLSCAN",
+	"filter" : {
+		"$and" : [
+			{
+				"borough" : {
+					"$eq" : "Staten Island"
+				}
+			},
+			{
+				"name" : {
+					"$eq" : "Bagel Land"
+				}
+			}
+		]
+	},
+	"direction" : "forward"
+}
+
+query: db.restaurants.explain().find({borough:"Queens", cuisine:"Pizza"})
+"winningPlan" : {
+	"stage" : "COLLSCAN",
+	"filter" : {
+		"$and" : [
+			{
+				"borough" : {
+						"$eq" : "Queens"
+				}
+			},
+			{
+				"cuisine" : {
+						"$eq" : "Pizza"
+				}
+			}
+		]
+	},
+	"direction" : "forward"
+}
+
+4.5
+query: db.restaurants.createIndex({"grades.8.score":1, name:1})
+query: db.restaurants.explain().find({"grades.8.score":{$lt:7}}, {_id:0,name:1})
+"winningPlan" : {
+	"stage" : "PROJECTION",
+	"transformBy" : {
+		"_id" : 0,
+		"name" : 1
+	},
+	"inputStage" : {
+		"stage" : "IXSCAN",
+		"keyPattern" : {
+			"grades.8.score" : 1,
+			"name" : 1
+		},
+		"indexName" : "grades.8.score_1_name_1",
+		"isMultiKey" : true,
+		"multiKeyPaths" : {
+			"grades.8.score" : [
+				"grades"
+			],
+			"name" : [ ]
+		},
+		"isUnique" : false,
+		"isSparse" : false,
+		"isPartial" : false,
+		"indexVersion" : 2,
+		"direction" : "forward",
+		"indexBounds" : {
+			"grades.8.score" : [
+				"[-inf.0, 7.0)"
+			],
+			"name" : [
+				"[MinKey, MaxKey]"
+			]
+		}
+	}
+}
