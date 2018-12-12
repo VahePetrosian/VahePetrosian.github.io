@@ -13,11 +13,10 @@ window.addEventListener("error", function (e) {
 }, true);
 
 //Lazy loading test
-function startButtonClick() {
-  import('./init').then((init) => {
-    init.init();
+async function startButtonClick() {
+  const main = await import('./init');
+  main.init();
     document.getElementById("overlayNav").style.display = "none";
-  });
 }
 
 //Error handler test
@@ -30,10 +29,9 @@ function failingFunction() {
   }
 }
 
-function showError(message) {
-  import('./errorhandler').then((err) => {
-    err.default.showErrorMessage(message);
-  });
+async function showError(message) {
+  const errorHandler = await import('./errorhandler');
+  errorHandler.default.showErrorMessage(message);
 }
 
 //JSON loader test

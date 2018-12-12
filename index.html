@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  <script src="dist/knockout-latest.js"></script>
   <!-- JQuery is used only by bootstrap -->
   <script src="dist/bundle.js"></script>
 </head>
@@ -48,31 +49,20 @@
           <a class="nav-link" href="#" id='topHeadlinesLink'>Top headlines</a>
         </li>
         <li class="nav-item dropdown active">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Country
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#" id='headlineCountryDeLink'>Germany</a>
-            <a class="dropdown-item" href="#" id='headlineCountryFrLink'>France</a>
-            <a class="dropdown-item" href="#" id='headlineCountryGbLink'>Great Britain</a>
-            <a class="dropdown-item" href="#" id='headlineCountryRuLink'>Russia</a>
-            <a class="dropdown-item" href="#" id='headlineCountryUaLink'>Ukraine</a>
-            <a class="dropdown-item" href="#" id='headlineCountryUsLink'>USA</a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown" id = "countrysDropDown" data-bind="foreach: countrys">
+              <a href="#" class="dropdown-item" data-bind="click: $parent.showCountryNews, text: name"></a>
+          </div>
         </li>
         <li class="nav-item dropdown active">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Category
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#" id='headlineCategoryBusinessLink'>Business</a>
-            <a class="dropdown-item" href="#" id='headlineCategoryEntermentLink'>Enterment</a>
-            <a class="dropdown-item" href="#" id='headlineCategoryGeneralLink'>General</a>
-            <a class="dropdown-item" href="#" id='headlineCategoryHealthLink'>Health</a>
-            <a class="dropdown-item" href="#" id='headlineCategoryScienceLink'>Science</a>
-            <a class="dropdown-item" href="#" id='headlineCategorySportsLink'>Sports</a>
-            <a class="dropdown-item" href="#" id='headlineCategoryTechnologyLink'>Technology</a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown" id = "categorysDropDown" data-bind="foreach: categorys">
+            <a href="#" class="dropdown-item" data-bind="click: $parent.showCategoryNews, text: name"></a>
+          </div>
         </li>
         <li class="nav-item active">
           <a class="nav-link" href="#" id='casueErrorButton'>Cause error</a>

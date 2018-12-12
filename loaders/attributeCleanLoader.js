@@ -1,4 +1,5 @@
 module.exports = function (source) {
-    let result = source.replace('number', 'num');
+    let regexp = /[\'\"]\d+[\'\"]\s*\:.*?[\,\r]/g;
+    let result = source.replace(regexp, '');
     return result;
 }

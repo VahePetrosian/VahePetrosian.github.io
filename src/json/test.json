@@ -1,1 +1,11 @@
-{ "name":"Bob", "age":22, "number":"+126735267212" }
+{ 
+    "Name":"Bob", 
+    "Age":"22", 
+    "33":"number1",
+    "Type":{
+        "124":"number2", 
+        "123":"number3", "word" :"word",   
+        "125"  :"number4",
+        "Age2":"44"
+    }
+}
