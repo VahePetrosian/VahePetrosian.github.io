@@ -12,6 +12,7 @@ output:
 { "class" : "L", "total" : 23123 }
 { "class" : "P", "total" : 5683 }
 { "class" : "G", "total" : 17499 }
+
 2)
 db.airlines.aggregate([
 {$match: {destCountry: {$ne: "United States"}}},
@@ -23,12 +24,14 @@ output:
 { "avgPassengers" : 8052.380952380952, "city" : "Abu Dhabi, United Arab Emirates" }
 { "avgPassengers" : 7176.596638655462, "city" : "Dubai, United Arab Emirates" }
 { "avgPassengers" : 7103.333333333333, "city" : "Guangzhou, China" }
+
 3)
 db.airlines.aggregate([
 {$match: {destCountry: {$eq: "Latvia"}}},
 {$group: {_id: "$destCountry", carriers: {$addToSet: "$carrier"}}}])
 output:
 { "_id" : "Latvia", "carriers" : [ "Uzbekistan Airways", "Blue Jet SP Z o o", "JetClub AG" ] }
+
 4)
 db.airlines.aggregate([
 {$match: {
@@ -48,6 +51,7 @@ output:
 { "_id" : "Meridiana S.p.A", "total" : 20308 }
 { "_id" : "Norwegian Air Shuttle ASA", "total" : 13344 }
 { "_id" : "VistaJet Limited", "total" : 183 }
+
 5) 
 db.airlines.aggregate([
 {$match: {originCountry: {$eq: "United States"}}},
