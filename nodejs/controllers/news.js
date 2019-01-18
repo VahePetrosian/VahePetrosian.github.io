@@ -39,7 +39,7 @@ module.exports = {
   },
   update: function (req, res, next) {
     let id = req.params.id || req.body.id;
-    newsModel.update({ _id: id }, {
+    newsModel.updateOne({ _id: id }, {
       author: req.body.author,
       urlToImage: req.body.urlToImage,
       title: req.body.title,
